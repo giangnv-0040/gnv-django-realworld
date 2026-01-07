@@ -2,15 +2,22 @@
 
 ## API Examples
 
-### Create user
+### Authentication APIs
+
+#### Create user
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{"user":{"username":"gnv","email":"gnv@gmail.com","password":"12345678"}}' \
   http://localhost:8000/api/users
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"user":{"username":"jake","email":"jake@gmail.com","password":"12345678"}}' \
+  http://localhost:8000/api/users
 ```
 
-### Login
+#### Login
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
@@ -18,7 +25,7 @@ curl -X POST \
   http://localhost:8000/api/users/login
 ```
 
-### Get Current User
+#### Get Current User
 ```bash
 # Login và lưu token vào biến
 TOKEN=$(curl -s -X POST \
@@ -33,7 +40,7 @@ curl -X GET \
   http://localhost:8000/api/user
 ```
 
-### Update User
+#### Update User
 ```bash
 # Update user bio and image
 curl -X PUT \
@@ -55,4 +62,70 @@ curl -X PUT \
   -H "Authorization: Bearer ${TOKEN}" \
   -d '{"user":{"password":"newpassword123"}}' \
   http://localhost:8000/api/user
+```
+
+### Profile APIs
+
+#### Get Profile
+```bash
+# Get profile without authentication (following = false)
+curl -X GET \
+  http://localhost:8000/api/profiles/gnv/
+
+# Get profile with authentication (shows real following status)
+curl -X GET \
+  -H "Authorization: Bearer ${TOKEN}" \
+  http://localhost:8000/api/profiles/gnv/
+```
+
+**Response:**
+```json
+{
+  "profile": {
+    "username": "gnv",
+    "bio": "I work at State Farm",
+    "image": "https://i.stack.imgur.com/xHWG8.jpg",
+    "following": false
+  }
+}
+```
+
+#### Follow User
+```bash
+# Follow a user (authentication required)
+curl -X POST \
+  -H "Authorization: Bearer ${TOKEN}" \
+  http://localhost:8000/api/profiles/jake/follow/
+```
+
+**Response:**
+```json
+{
+  "profile": {
+    "username": "jake",
+    "bio": "I work at Jake Farm",
+    "image": "https://api.realworld.io/images/demo-avatar.png",
+    "following": true
+  }
+}
+```
+
+#### Unfollow User
+```bash
+# Unfollow a user (authentication required)
+curl -X DELETE \
+  -H "Authorization: Bearer ${TOKEN}" \
+  http://localhost:8000/api/profiles/jake/follow/
+```
+
+**Response:**
+```json
+{
+  "profile": {
+    "username": "jake",
+    "bio": "I work at Jake Farm",
+    "image": "https://api.realworld.io/images/demo-avatar.png",
+    "following": false
+  }
+}
 ```
