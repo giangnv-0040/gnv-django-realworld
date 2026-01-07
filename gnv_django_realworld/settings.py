@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'core',
     'users',
+    'profiles',
     'articles',
     'comments',
     'tags',
