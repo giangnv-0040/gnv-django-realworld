@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'core',
     'users',
+    'follows',
     'articles',
     'comments',
     'tags',
