@@ -129,3 +129,38 @@ curl -X DELETE \
   }
 }
 ```
+
+### Tags APIs
+
+#### Get Tags
+```bash
+# Get all tags (no authentication required)
+curl -X GET \
+  http://localhost:8000/api/tags/
+```
+
+**Response:**
+```json
+{
+  "tags": ["reactjs", "angularjs", "dragons"]
+}
+```
+
+#### Create Tag
+```bash
+# Create a new tag (authentication required)
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -d '{"tag":{"name":"reactjs"}}' \
+  http://localhost:8000/api/tags/
+```
+
+**Response:**
+```json
+{
+  "tag": {
+    "name": "reactjs"
+  }
+}
+```
