@@ -1,6 +1,8 @@
 from django.urls import path
 
-# TODO: Add tag views here
+from tags.api.v1.views import TagsView
+
+
 urlpatterns = [
-    # path('tags/', TagListView.as_view(), name='tag-list'),
+    path('tags/', TagsView.as_view(), name='tags'),
 ]
