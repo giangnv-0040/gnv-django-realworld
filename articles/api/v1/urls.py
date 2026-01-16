@@ -1,6 +1,10 @@
 from django.urls import path
 
-# TODO: Add article views here
+from articles.api.v1.views import ArticlesView, ArticleDetailView, FavoriteArticleView
+
+
 urlpatterns = [
-    # path('articles/', ArticleListView.as_view(), name='article-list'),
+    path('articles/', ArticlesView.as_view(), name='articles'),
+    path('articles/<str:slug>/', ArticleDetailView.as_view(), name='article-detail'),
+    path('articles/<str:slug>/favorite/', FavoriteArticleView.as_view(), name='favorite-article'),
 ]
