@@ -367,3 +367,70 @@ curl -X DELETE \
   }
 }
 ```
+
+### Comment APIs
+
+#### Get Comments for Article
+```bash
+# Get all comments for an article (no authentication required)
+curl -X GET \
+  http://localhost:8000/api/articles/how-to-train-your-dragon/comments/
+```
+
+**Response:**
+```json
+{
+  "comments": [
+    {
+      "id": 1,
+      "body": "It takes a Jacobian",
+      "createdAt": "2024-01-09T12:00:00.000Z",
+      "updatedAt": "2024-01-09T12:00:00.000Z",
+      "author": {
+        "username": "jake",
+        "bio": "I work at statefarm",
+        "image": "https://i.stack.imgur.com/xHWG8.jpg",
+        "following": false
+      }
+    }
+  ]
+}
+```
+
+#### Add Comment to Article
+```bash
+# Add a comment to an article (authentication required)
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -d '{"comment":{"body":"Thank you so much!"}}' \
+  http://localhost:8000/api/articles/how-to-train-your-dragon/comments/
+```
+
+**Response:**
+```json
+{
+  "comment": {
+    "id": 1,
+    "body": "Thank you so much!",
+    "createdAt": "2024-01-09T12:00:00.000Z",
+    "updatedAt": "2024-01-09T12:00:00.000Z",
+    "author": {
+      "username": "gnv",
+      "bio": "I work at State Farm",
+      "image": "https://i.stack.imgur.com/xHWG8.jpg",
+      "following": false
+    }
+  }
+}
+```
+
+#### Delete Comment
+```bash
+# Delete a comment (authentication required, must be comment author)
+curl -X DELETE \
+  -H "Authorization: Bearer ${TOKEN}" \
+  http://localhost:8000/api/articles/how-to-train-your-dragon/comments/1/
+```
+
+**Response:** `204 No Content`
