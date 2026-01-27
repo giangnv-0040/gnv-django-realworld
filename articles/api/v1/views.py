@@ -2,19 +2,38 @@ from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.pagination import LimitOffsetPagination
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 
 from articles.models import Article
 from articles.api.v1.serializers import ArticleSerializer
+from articles.api.v1.filters import ArticleFilter
+
+
+class ArticlesPagination(LimitOffsetPagination):
+    """Custom pagination for articles"""
+    default_limit = 20
+    max_limit = 100
 
 
 class ArticlesView(generics.ListCreateAPIView):
     """
-    GET /api/articles - List articles
+    GET /api/articles - List articles with filters
     POST /api/articles - Create article
+
+    Query parameters for GET:
+    - tag: Filter by tag name
+    - author: Filter by author username
+    - favorited: Filter by username who favorited
+    - limit: Number of articles (default: 20, max: 100)
+    - offset: Number of articles to skip (default: 0)
     """
     queryset = Article.objects.all().select_related('author').prefetch_related('tags', 'favorited_by')
     serializer_class = ArticleSerializer
+    pagination_class = ArticlesPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ArticleFilter
 
     def get_permissions(self):
         """GET: AllowAny, POST: IsAuthenticated"""
@@ -23,16 +42,22 @@ class ArticlesView(generics.ListCreateAPIView):
         return [IsAuthenticated()]
 
     def get_queryset(self):
-        """Get queryset with optional filters"""
-        queryset = super().get_queryset()
-        # TODO: Add filters (tag, author, favorited)
-        return queryset
+        """Get base queryset with optimizations"""
+        return super().get_queryset().distinct().order_by('-created_at')
 
     def list(self, request, *args, **kwargs):
-        """Custom list response format"""
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+        """Custom list response format with pagination"""
+        queryset = self.filter_queryset(self.get_queryset())
 
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return Response({
+                'articles': serializer.data,
+                'articlesCount': queryset.count()
+            })
+
+        serializer = self.get_serializer(queryset, many=True)
         return Response({
             'articles': serializer.data,
             'articlesCount': queryset.count()

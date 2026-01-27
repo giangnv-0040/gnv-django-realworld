@@ -172,7 +172,34 @@ curl -X POST \
 # Get all articles (no authentication required)
 curl -X GET \
   http://localhost:8000/api/articles/
+
+# Filter by tag
+curl -X GET \
+  "http://localhost:8000/api/articles/?tag=dragons"
+
+# Filter by author
+curl -X GET \
+  "http://localhost:8000/api/articles/?author=jake"
+
+# Filter by favorited by user
+curl -X GET \
+  "http://localhost:8000/api/articles/?favorited=gnv"
+
+# Pagination with limit and offset
+curl -X GET \
+  "http://localhost:8000/api/articles/?limit=10&offset=0"
+
+# Combine filters and pagination
+curl -X GET \
+  "http://localhost:8000/api/articles/?tag=dragons&author=jake&limit=20&offset=0"
 ```
+
+**Query Parameters:**
+- `tag`: Filter by tag name
+- `author`: Filter by author username
+- `favorited`: Filter by username who favorited
+- `limit`: Number of articles to return (default: 20, max: 100)
+- `offset`: Number of articles to skip (default: 0)
 
 **Response:**
 ```json
